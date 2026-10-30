@@ -1,0 +1,21 @@
+# Example environments. No secrets here: only names of environment variables (*_env).
+# demo is the local demo stand from demo_stand/server.py. Add your environment as a block with the same keys.
+demo:
+  verify_ssl: true
+  http_timeout: 10
+  ui_browser: chromium
+  ui_timeout_ms: 5000
+  ui_test_id_attribute: data-testid
+  urls:
+    contracts: http://127.0.0.1:8099/api/v1
+    web: http://127.0.0.1:8099/web
+  auth:
+    token_url: http://127.0.0.1:8099/oauth/token
+    profiles:
+      contracts_admin: {grant_type: password, client_id: contracts-api, client_secret_env: CONTRACTS_CLIENT_SECRET,
+                        username_env: AUTOTEST_USERNAME, password_env: AUTOTEST_PASSWORD}
+  ui_users:
+    operator: {username_env: AUTOTEST_USERNAME, password_env: UI_OPERATOR_PASSWORD}
+  plans:
+    basic: {planId: 7f41c6bb-9b35-432d-86b2-d4b4cebd2634}
+    premium: {planId: 6b8cf487-13f8-4d7e-8480-a2935f6836ee}

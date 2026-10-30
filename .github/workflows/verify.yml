@@ -1,0 +1,66 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:  # release.yml runs the same checks before publishing
+
+jobs:
+  example:
+    name: Example built from the skills (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: example/requirements.txt
+      - name: Example dependencies
+        run: |
+          pip install -r example/requirements.txt
+          python -m playwright install --with-deps chromium
+      - name: The example matches the skills, tests and the report are fine
+        run: python tools/verify.py
+      - name: A scaffolded project without UI and Kafka collects and lints
+        run: |
+          python skills/pytest-integration-bootstrap/scripts/scaffold.py --dest /tmp/scaffolded --without ui kafka --ci github
+          cd /tmp/scaffolded && ruff check . && { pytest --collect-only -q || test $? -eq 5; }  # 5 = no tests yet
+      - name: Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-py${{ matrix.python-version }}
+          path: example/allure-results
+          if-no-files-found: ignore
+
+  kafka:
+    name: Kafka listener against a real broker
+    runs-on: ubuntu-latest
+    services:
+      kafka:
+        image: apache/kafka:3.9.0
+        ports: ["9092:9092"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r example/requirements.txt
+      - run: python tools/kafka_check.py
+
+  plugin:
+    name: Claude Code plugin manifests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npx --yes @anthropic-ai/claude-code@2.1.314 plugin validate . --strict

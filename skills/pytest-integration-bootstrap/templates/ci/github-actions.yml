@@ -1,0 +1,28 @@
+# GitHub Actions: copy to .github/workflows/autotests.yml. Secrets: repository secrets with the names from .env.example.
+name: autotests
+
+on:
+  schedule: [{cron: "17 5 * * 1-5"}]
+  workflow_dispatch:
+    inputs:
+      env: {description: "Environment from config.yml", default: staging}
+      mark: {description: "pytest -m expression", default: smoke}
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    env:
+      TEST_ENV: ${{ inputs.env || 'staging' }}
+      AUTOTEST_USERNAME: ${{ secrets.AUTOTEST_USERNAME }}
+      AUTOTEST_PASSWORD: ${{ secrets.AUTOTEST_PASSWORD }}
+      API_CLIENT_SECRET: ${{ secrets.API_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -r requirements.txt
+      # UI: - run: python -m playwright install --with-deps chromium
+      - run: pytest -m "${{ inputs.mark || 'smoke' }}" -n 4 --alluredir allure-results --junitxml report.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: allure-results, path: allure-results}

@@ -1,0 +1,32 @@
+# Environments. No secrets here: only names of environment variables (*_env).
+# Add an environment as a block with the same keys; shared values can go to an anchor:
+#   defaults: &defaults {http_timeout: 30, verify_ssl: true}
+#   staging: {<<: *defaults, urls: {...}}
+staging:
+  verify_ssl: true          # false for an environment with a self-signed certificate
+  http_timeout: 30
+  ui_browser: chromium      # chromium / firefox / webkit
+  ui_timeout_ms: 15000
+  ui_test_id_attribute: data-testid
+  urls:
+    api: https://api.staging.example.com/v1
+    web: https://app.staging.example.com
+  auth:
+    token_url: https://auth.staging.example.com/oauth/token   # default for oauth2 profiles
+    profiles:
+      # type: oauth2 (default) | basic | api_key; a client calls get_auth(cfg, "<profile>"), None = no auth
+      api_admin: {grant_type: password, client_id: autotests, client_secret_env: API_CLIENT_SECRET,
+                  username_env: AUTOTEST_USERNAME, password_env: AUTOTEST_PASSWORD}
+      service: {grant_type: client_credentials, client_id: service-client, client_secret_env: SERVICE_CLIENT_SECRET,
+                scope: "api.read api.write"}
+      partner: {type: basic, username_env: PARTNER_USERNAME, password_env: PARTNER_PASSWORD}
+      public_api: {type: api_key, header: X-API-Key, key_env: PUBLIC_API_KEY}
+  ui_users:
+    operator: {username_env: AUTOTEST_USERNAME, password_env: UI_OPERATOR_PASSWORD}
+  kafka:
+    bootstrap_servers: kafka-1.staging.example.com:9092,kafka-2.staging.example.com:9092
+    security_protocol: SASL_SSL
+    sasl_mechanism: SCRAM-SHA-512
+    username_env: KAFKA_USERNAME
+    password_env: KAFKA_PASSWORD
+    topics: {events: staging.events.v1}

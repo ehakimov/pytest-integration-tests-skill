@@ -1,0 +1,11 @@
+{
+  "name": "pytest-integration-tests",
+  "version": "1.0.0",
+  "description": "Skills for pytest integration tests: layers models → client → steps → test → asserts, readable Allure reports, xdist, Playwright, Kafka, a ready project core and CI.",
+  "author": {
+    "name": "Eduard Khakimov"
+  },
+  "repository": "https://github.com/OWNER/pytest-integration-tests",
+  "license": "MIT",
+  "keywords": ["pytest", "integration-tests", "api-testing", "allure", "xdist", "playwright", "kafka", "qa", "test-automation"]
+}

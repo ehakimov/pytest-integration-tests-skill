@@ -1,0 +1,14 @@
+{
+  "name": "pytest-integration-tests",
+  "description": "A single-plugin marketplace: skills for pytest integration tests with Allure reports.",
+  "owner": {
+    "name": "Eduard Khakimov"
+  },
+  "plugins": [
+    {
+      "name": "pytest-integration-tests",
+      "source": "./",
+      "description": "Writes layered integration tests and scaffolds the project core: HttpClient, authorization profiles, Allure, xdist, Playwright, Kafka, CI."
+    }
+  ]
+}

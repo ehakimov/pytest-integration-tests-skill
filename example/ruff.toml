@@ -1,0 +1,14 @@
+# Layer rules as lint checks (see the pytest-integration-tests skill): run `ruff check .` before handing over.
+line-length = 120
+
+[lint]
+select = ["F", "S101", "T20", "BLE", "TID251"]
+
+[lint.flake8-tidy-imports.banned-api]
+"requests".msg = "HTTP goes through a service client (modules/<domain>/*_client_v1.py) built on HttpClient"
+"time.sleep".msg = "Wait with modules.waiters.wait_until: one step in the report, the polling history"
+"allure.attach".msg = "Attachments go through modules.allure_helper: secrets are masked there"
+
+[lint.per-file-ignores]
+"asserts/**" = ["S101"]  # plain assert is allowed only inside assertions
+"modules/{http_client,auth,waiters,allure_helper}.py" = ["TID251"]  # the core owns HTTP, waiting and attachments

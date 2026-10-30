@@ -1,0 +1,11 @@
+pytest==9.1.1
+pytest-xdist==3.6.1
+allure-pytest==2.13.5
+requests==2.34.2
+PyYAML==6.0.3
+python-dotenv==1.2.3
+jsonschema==4.26.0
+Faker==37.1.1
+ruff==0.16.9
+playwright==1.63.0  # feature: ui
+confluent-kafka==2.7.0  # feature: kafka
